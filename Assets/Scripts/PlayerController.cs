@@ -1,70 +1,63 @@
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 public class PlayerController : MonoBehaviour
 {
-    [Header("References")]
-    public Rigidbody rb;
+    private CharacterController characterController;
     public Transform head;
     public Camera playerCamera;
 
-    [Header("Configuration")]
     public float moveSpeed = 5f;
-    public float mouseSensitivity = 2f;
+    public float rotateSpeed = 10f;
     public float jumpForce = 5f;
-    public float gravityScale = 1f;
+    public float gravity = -30f;
 
-    [Header("Runtime")]
+    private float rotationY;
+    private float verticalVelocity;
+
     public Vector3 newVelocity;
 
     void Start()
     {
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
+        characterController = GetComponent<CharacterController>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        transform.Rotate(Vector3.up * Input.GetAxis("Mouse X") * mouseSensitivity);
-        Vector3 headRotation = head.localEulerAngles;
-        headRotation.x = RestrictAngle(headRotation.x - Input.GetAxis("Mouse Y") * mouseSensitivity, -90f, 90f);
-        head.localEulerAngles = headRotation;
-
-        newVelocity = Vector3.up * rb.linearVelocity.y;
-        float speed = moveSpeed;
-        newVelocity.x = Input.GetAxis("Horizontal") * speed;
-        newVelocity.z = Input.GetAxis("Vertical") * speed;
-
     }
 
     void FixedUpdate()
     {
-        rb.linearVelocity = transform.TransformDirection(newVelocity);
+        //rb.linearVelocity = transform.TransformDirection(newVelocity);
     }
 
     void LateUpdate()
-    {
-      Vector3 e = head.eulerAngles;
-      e.x -= Input.GetAxis("Mouse Y") * mouseSensitivity;
-      e.x = RestrictAngle(e.x, -85f, 85f);  
-      head.eulerAngles = e;
+    {   
     }
 
-    public float RestrictAngle(float angle, float angleMin, float angleMax)
+    public void Move(Vector2 moveVector)
     {
-        if (angle > 180f) angle -= 360f;
-        else if (angle < -180f) angle += 360f;
-        return Mathf.Clamp(angle, angleMin, angleMax);
+        Vector3 move = transform.forward * moveVector.y + transform.right * moveVector.x;
+        move = move * moveSpeed * Time.deltaTime;
+        characterController.Move(move);
+
+        verticalVelocity += gravity * Time.deltaTime;
+        characterController.Move(new Vector3(0, verticalVelocity, 0) * Time.deltaTime);
     }
 
-    void OnCollisionStay(Collision collision)
+    public void Rotate(Vector2 lookVector)
     {
-        
+        rotationY += lookVector.x * rotateSpeed * Time.deltaTime;
+        transform.localRotation = Quaternion.Euler(0, rotationY, 0);
     }
 
-    void OnCollisionExit(Collision collision)
+    public void Jump()
     {
-        
+        if (characterController.isGrounded)
+        {
+            verticalVelocity = jumpForce;
+        }
     }
 
 }
