@@ -6,7 +6,7 @@ public class InputHandler : MonoBehaviour
     public PlayerController playerController;
 
     public InputActions playerControls;
-    InputAction moveAction, lookAction;
+    InputAction moveAction, lookAction, hitAction;
 
     void Awake()
     {
@@ -19,6 +19,12 @@ public class InputHandler : MonoBehaviour
         playerControls.Enable();
         moveAction = playerControls.Player.Move;
         lookAction = playerControls.Player.Look;
+        hitAction = playerControls.Player.Attack;
+        hitAction.performed += AttackAction;
+    }
+    void OnDisable()
+    {
+        playerControls.Disable();
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -32,11 +38,15 @@ public class InputHandler : MonoBehaviour
     void Update()
     {
         Vector2 moveVector = moveAction.ReadValue<Vector2>();
-        
         playerController.Move(moveVector);
 
         // Handle look input
         Vector2 lookVector = lookAction.ReadValue<Vector2>();
         playerController.Rotate(lookVector);
+    }
+
+    void AttackAction(InputAction.CallbackContext context)
+    {
+        playerController.Attack();
     }
 }

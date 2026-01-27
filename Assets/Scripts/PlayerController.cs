@@ -7,6 +7,11 @@ public class PlayerController : MonoBehaviour
     public Transform head;
     public Camera playerCamera;
 
+    private Transform weapon;
+
+    bool attacking = false;
+    bool retracting = false;
+
     public float moveSpeed = 5f;
     public float rotateSpeed = 10f;
     public float jumpForce = 5f;
@@ -17,9 +22,15 @@ public class PlayerController : MonoBehaviour
 
     public Vector3 newVelocity;
 
-    void Start()
+    void Awake()
     {
         characterController = GetComponent<CharacterController>();
+        rotationY = transform.localEulerAngles.y;
+    }
+
+    void Start()
+    {
+        weapon = GameObject.Find("SledgePrimitive").transform;
     }
 
     // Update is called once per frame
@@ -30,6 +41,28 @@ public class PlayerController : MonoBehaviour
     void FixedUpdate()
     {
         //rb.linearVelocity = transform.TransformDirection(newVelocity);
+        if (attacking)
+        {
+            if (weapon.rotation.eulerAngles.x >= 90f)
+            {
+                attacking = false;
+                retracting = true;
+                weapon.rotation = Quaternion.Euler(90f, weapon.rotation.eulerAngles.y, weapon.rotation.eulerAngles.z);
+            }
+            else
+                weapon.Rotate(Vector3.right * 100f * Time.fixedDeltaTime);
+        }
+        else if (retracting)
+        {
+            //Debug.Log("Retracting, angle: " + weapon.rotation.eulerAngles.x);
+            if (weapon.rotation.eulerAngles.x <= 0f || weapon.rotation.eulerAngles.x >= 180f)
+            {
+                retracting = false;
+                weapon.rotation = Quaternion.Euler(0f, weapon.rotation.eulerAngles.y, weapon.rotation.eulerAngles.z);
+            }
+            else
+                weapon.Rotate(Vector3.left * 100f * Time.fixedDeltaTime);
+        }
     }
 
     void LateUpdate()
@@ -57,6 +90,28 @@ public class PlayerController : MonoBehaviour
         if (characterController.isGrounded)
         {
             verticalVelocity = jumpForce;
+        }
+    }
+
+    public void Attack()
+    {
+        if (!attacking && !retracting)
+        {
+            attacking = true;
+        }
+        //Debug.Log("Attack triggered");
+    }
+
+    public void MeleeHit(GameObject hitObject)
+    {
+        Debug.Log("PlayerController registered melee hit on: " + hitObject.name);
+        if (!retracting)
+        {
+            if (attacking)
+            {
+                attacking = false;
+                retracting = true;
+            }
         }
     }
 
