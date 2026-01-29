@@ -17,6 +17,8 @@ public class PlayerController : MonoBehaviour
     public float jumpForce = 5f;
     public float gravity = -30f;
 
+    public float swingSpeed = 250f;
+
     private float rotationY;
     private float verticalVelocity;
 
@@ -50,7 +52,7 @@ public class PlayerController : MonoBehaviour
                 weapon.rotation = Quaternion.Euler(90f, weapon.rotation.eulerAngles.y, weapon.rotation.eulerAngles.z);
             }
             else
-                weapon.Rotate(Vector3.right * 100f * Time.fixedDeltaTime);
+                weapon.Rotate(Vector3.right * swingSpeed * Time.fixedDeltaTime);
         }
         else if (retracting)
         {
@@ -61,7 +63,7 @@ public class PlayerController : MonoBehaviour
                 weapon.rotation = Quaternion.Euler(0f, weapon.rotation.eulerAngles.y, weapon.rotation.eulerAngles.z);
             }
             else
-                weapon.Rotate(Vector3.left * 100f * Time.fixedDeltaTime);
+                weapon.Rotate(Vector3.left * swingSpeed * Time.fixedDeltaTime);
         }
     }
 
