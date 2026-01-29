@@ -32,7 +32,8 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        weapon = GameObject.Find("SledgePrimitive").transform;
+        //weapon = GameObject.Find("SledgePrimitive").transform;
+        weapon = GameObject.Find("SledgeHammer").transform;
     }
 
     // Update is called once per frame
@@ -45,25 +46,27 @@ public class PlayerController : MonoBehaviour
         //rb.linearVelocity = transform.TransformDirection(newVelocity);
         if (attacking)
         {
-            if (weapon.rotation.eulerAngles.x >= 90f)
+            //if (weapon.rotation.eulerAngles.x >= 90f)
+            if (weapon.rotation.eulerAngles.z >= 45f)
             {
                 attacking = false;
                 retracting = true;
-                weapon.rotation = Quaternion.Euler(90f, weapon.rotation.eulerAngles.y, weapon.rotation.eulerAngles.z);
+                weapon.rotation = Quaternion.Euler(weapon.rotation.eulerAngles.x, weapon.rotation.eulerAngles.y, 45f);
             }
             else
-                weapon.Rotate(Vector3.right * swingSpeed * Time.fixedDeltaTime);
+                weapon.Rotate(Vector3.forward * swingSpeed * Time.fixedDeltaTime);
         }
         else if (retracting)
         {
             //Debug.Log("Retracting, angle: " + weapon.rotation.eulerAngles.x);
-            if (weapon.rotation.eulerAngles.x <= 0f || weapon.rotation.eulerAngles.x >= 180f)
+            //if (weapon.rotation.eulerAngles.x <= 0f || weapon.rotation.eulerAngles.x >= 180f)
+            if (weapon.rotation.eulerAngles.z <= 0f || weapon.rotation.eulerAngles.z >= 180f)
             {
                 retracting = false;
-                weapon.rotation = Quaternion.Euler(0f, weapon.rotation.eulerAngles.y, weapon.rotation.eulerAngles.z);
+                weapon.rotation = Quaternion.Euler(weapon.rotation.eulerAngles.x, weapon.rotation.eulerAngles.y, 0);
             }
             else
-                weapon.Rotate(Vector3.left * swingSpeed * Time.fixedDeltaTime);
+                weapon.Rotate(Vector3.back * swingSpeed * Time.fixedDeltaTime);
         }
     }
 
