@@ -78,6 +78,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: SledgeHammer
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 049a99caf0a3ce24e8670228d4eabb69,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 049a99caf0a3ce24e8670228d4eabb69,
+        type: 3}
+      propertyPath: m_TagString
+      value: MeleeSledge
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -114,7 +124,7 @@ BoxCollider:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
@@ -141,7 +151,7 @@ Rigidbody:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 0
@@ -161,8 +171,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0ed699ba3804ca4aa01981c73c16bf7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  decalPrefab: {fileID: 5026187398730588957, guid: 71993bdd1d7bb8248991992991c0a76a,
-    type: 3}
   decalMaterial: {fileID: 2100000, guid: 76d42ac1d11f8094684ffbf4e116e215, type: 2}
   hitRecoverTime: 0.5
   decalFadeTime: 10
