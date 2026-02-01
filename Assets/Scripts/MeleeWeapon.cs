@@ -11,9 +11,12 @@ public struct HitDecalInfo
 public class MeleeWeapon : MonoBehaviour
 {
     PlayerController playerController;
-    public GameObject decalPrefab; // Assign a prefab with DecalProjector component
+    //public GameObject decalPrefab; // Assign a prefab with DecalProjector component
+    [SerializeField] Material decalMaterial;
 
-    List<HitDecalInfo> hitDecals = new List<HitDecalInfo>();
+    //List<HitDecalInfo> hitDecals = new List<HitDecalInfo>();
+
+    Decals decalManager;
 
     public float hitRecoverTime = 0.50f;
     private float lastHitTime = 0f;
@@ -27,13 +30,13 @@ public class MeleeWeapon : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        decalManager = FindFirstObjectByType<Decals>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        float curTime = Time.time;
+        /*float curTime = Time.time;
         if (hitDecals.Count > 0)
         {
             for (int i = hitDecals.Count - 1; i > -1; i--)
@@ -44,7 +47,7 @@ public class MeleeWeapon : MonoBehaviour
                     hitDecals.RemoveAt(i);
                 }
             }
-        }
+        }*/
         
     }
 
@@ -64,13 +67,25 @@ public class MeleeWeapon : MonoBehaviour
         {
             // Spawn decal at hit point
             ContactPoint contact = collision.contacts[0];
+
+            //Vector3 adjustedPoint = contact.point;
+            //adjustedPoint.z -= 0.25f; // Slightly adjust backwards (weapon-specific? motion-specific?) (speed / 1000)
+            
+            // Use the contact normal and separation to get the actual surface point
+            // The separation tells us how deep the contact is penetrating
+            //Vector3 surfacePoint = contact.point + contact.normal * contact.separation;
+
+            decalManager.SpawnDecal(contact.point, contact.normal, collision.transform, contact.separation + 0.25f, decalMaterial);
+/*
+            //Vector3 surfacePoint = contact.point + contact.normal * contact.separation;
             Vector3 decalPosition = contact.point - contact.normal * 0.25f; // Offset INTO the surface
             GameObject decal = Instantiate(decalPrefab, decalPosition, Quaternion.LookRotation(contact.normal));
             decal.transform.SetParent(collision.transform);
 
             lastHitTime = Time.time;
 
-            hitDecals.Add(new HitDecalInfo { hitTime = lastHitTime, decal = decal} );           
+            hitDecals.Add(new HitDecalInfo { hitTime = lastHitTime, decal = decal} );
+*/          
         }
     }
 }

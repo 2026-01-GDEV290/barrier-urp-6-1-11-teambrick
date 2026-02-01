@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.TextCore.Text;
+using System.Collections;
 
 public class PlayerController : MonoBehaviour
 {
@@ -19,8 +20,15 @@ public class PlayerController : MonoBehaviour
 
     public float swingSpeed = 250f;
 
+    [SerializeField] private float cameraShakeDuration = 0.1f;
+    [SerializeField] private float cameraShakeStrength = 0.15f;
+
+    private Vector3 cameraOriginalPosition;
+    private float rotationX;
     private float rotationY;
     private float verticalVelocity;
+
+    private int hitCount = 0;
 
     public Vector3 newVelocity;
 
@@ -28,6 +36,7 @@ public class PlayerController : MonoBehaviour
     {
         characterController = GetComponent<CharacterController>();
         rotationY = transform.localEulerAngles.y;
+        rotationX = transform.localEulerAngles.x;
     }
 
     void Start()
@@ -47,26 +56,26 @@ public class PlayerController : MonoBehaviour
         if (attacking)
         {
             //if (weapon.rotation.eulerAngles.x >= 90f)
-            if (weapon.rotation.eulerAngles.z >= 45f)
+            if (weapon.localRotation.eulerAngles.z >= 45f)
             {
                 attacking = false;
                 retracting = true;
-                weapon.rotation = Quaternion.Euler(weapon.rotation.eulerAngles.x, weapon.rotation.eulerAngles.y, 45f);
+                weapon.localRotation = Quaternion.Euler(weapon.localRotation.eulerAngles.x, weapon.localRotation.eulerAngles.y, 45f);
             }
             else
-                weapon.Rotate(Vector3.forward * swingSpeed * Time.fixedDeltaTime);
+                weapon.Rotate(Vector3.forward * swingSpeed * Time.fixedDeltaTime, Space.Self);
         }
         else if (retracting)
         {
             //Debug.Log("Retracting, angle: " + weapon.rotation.eulerAngles.x);
             //if (weapon.rotation.eulerAngles.x <= 0f || weapon.rotation.eulerAngles.x >= 180f)
-            if (weapon.rotation.eulerAngles.z <= 0f || weapon.rotation.eulerAngles.z >= 180f)
+            if (weapon.localRotation.eulerAngles.z <= 0f || weapon.localRotation.eulerAngles.z >= 180f)
             {
                 retracting = false;
-                weapon.rotation = Quaternion.Euler(weapon.rotation.eulerAngles.x, weapon.rotation.eulerAngles.y, 0);
+                weapon.localRotation = Quaternion.Euler(weapon.localRotation.eulerAngles.x, weapon.localRotation.eulerAngles.y, 0);
             }
             else
-                weapon.Rotate(Vector3.back * swingSpeed * Time.fixedDeltaTime);
+                weapon.Rotate(Vector3.back * swingSpeed * Time.fixedDeltaTime, Space.Self);
         }
     }
 
@@ -86,8 +95,11 @@ public class PlayerController : MonoBehaviour
 
     public void Rotate(Vector2 lookVector)
     {
+        // x-axis of mouse controls pitch (looking up/down)
         rotationY += lookVector.x * rotateSpeed * Time.deltaTime;
-        transform.localRotation = Quaternion.Euler(0, rotationY, 0);
+        rotationX -= lookVector.y * rotateSpeed * Time.deltaTime;
+        //rotationX = Mathf.Clamp(rotationX, -90f, 90f);
+        transform.localRotation = Quaternion.Euler(rotationX, rotationY, 0);
     }
 
     public void Jump()
@@ -110,14 +122,44 @@ public class PlayerController : MonoBehaviour
     public void MeleeHit(GameObject hitObject)
     {
         Debug.Log("PlayerController registered melee hit on: " + hitObject.name);
+        
         if (!retracting)
         {
             if (attacking)
             {
+                hitCount++;                
+                if (hitCount > 3)
+                    hitCount = 0;
+                cameraShakeDuration = Mathf.Clamp(0.1f + (hitCount * 0.5f), 0.5f, 2f);
+                cameraShakeStrength = Mathf.Clamp(hitCount * 0.10f, 0.10f, 0.3f);
+                StartCoroutine(CameraShake());
                 attacking = false;
                 retracting = true;
             }
         }
     }
 
+    private IEnumerator CameraShake()
+    {
+        cameraOriginalPosition = playerCamera.transform.localPosition;
+        float elapsedTime = 0f;
+
+        while (elapsedTime < cameraShakeDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float t = elapsedTime / cameraShakeDuration;
+            float intensity = (1f - t) * cameraShakeStrength; // Fade out the shake
+
+            Vector3 randomShake = new Vector3(
+                Random.Range(-1f, 1f),
+                Random.Range(-1f, 1f),
+                0f
+            ) * intensity;
+
+            playerCamera.transform.localPosition = cameraOriginalPosition + randomShake;
+            yield return null;
+        }
+
+        playerCamera.transform.localPosition = cameraOriginalPosition;
+    }
 }

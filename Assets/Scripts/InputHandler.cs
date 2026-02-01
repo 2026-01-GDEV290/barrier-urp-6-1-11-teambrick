@@ -6,7 +6,7 @@ public class InputHandler : MonoBehaviour
     public PlayerController playerController;
 
     public InputActions playerControls;
-    InputAction moveAction, lookAction, hitAction;
+    InputAction moveAction, lookAction, hitAction, jumpAction;
 
     void Awake()
     {
@@ -20,7 +20,9 @@ public class InputHandler : MonoBehaviour
         moveAction = playerControls.Player.Move;
         lookAction = playerControls.Player.Look;
         hitAction = playerControls.Player.Attack;
+        jumpAction = playerControls.Player.Jump;
         hitAction.performed += AttackAction;
+        jumpAction.performed += JumpAction;
     }
     void OnDisable()
     {
@@ -48,5 +50,10 @@ public class InputHandler : MonoBehaviour
     void AttackAction(InputAction.CallbackContext context)
     {
         playerController.Attack();
+    }
+
+    void JumpAction(InputAction.CallbackContext context)
+    {
+        playerController.Jump();
     }
 }
