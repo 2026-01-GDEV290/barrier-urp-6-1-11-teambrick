@@ -54,12 +54,12 @@ public class MeleeWeapon : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Melee weapon hit: " + other.gameObject.name);
+        Debug.Log("OnTrigger->Melee weapon hit: " + other.gameObject.name);
     }
 
     void OnCollisionEnter(Collision collision)
     {
-        Debug.Log("Melee weapon collided with: " + collision.gameObject.name);
+        Debug.Log("OnCollision->Melee weapon collided with: " + collision.gameObject.name);
         playerController.MeleeHit(collision.gameObject);
 
         Debug.Log($"Time.time {Time.time}, lastHitTime: {lastHitTime}, hitRecoverTime: {hitRecoverTime}");

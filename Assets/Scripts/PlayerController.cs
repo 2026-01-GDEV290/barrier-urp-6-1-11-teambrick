@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
     public Camera playerCamera;
 
     private Transform weapon;
+    private Collider weaponCollider;
 
     bool attacking = false;
     bool retracting = false;
@@ -43,6 +44,10 @@ public class PlayerController : MonoBehaviour
     {
         //weapon = GameObject.Find("SledgePrimitive").transform;
         weapon = GameObject.Find("SledgeHammer").transform;
+        //set collider to isTrigger
+        weaponCollider = weapon.GetComponent<Collider>();
+        weaponCollider.isTrigger = true;
+
     }
 
     // Update is called once per frame
@@ -115,6 +120,7 @@ public class PlayerController : MonoBehaviour
         if (!attacking && !retracting)
         {
             attacking = true;
+            weaponCollider.isTrigger = false;
         }
         //Debug.Log("Attack triggered");
     }
@@ -135,6 +141,7 @@ public class PlayerController : MonoBehaviour
                 StartCoroutine(CameraShake());
                 attacking = false;
                 retracting = true;
+                weaponCollider.isTrigger = true;
             }
         }
     }

@@ -1,4 +1,6 @@
+using UnityEditor.SearchService;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
 
 public class InputHandler : MonoBehaviour
@@ -45,6 +47,12 @@ public class InputHandler : MonoBehaviour
         // Handle look input
         Vector2 lookVector = lookAction.ReadValue<Vector2>();
         playerController.Rotate(lookVector);
+
+        // 'r' key pressed
+        if (Keyboard.current.rKey.wasPressedThisFrame)
+        {
+           SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
     }
 
     void AttackAction(InputAction.CallbackContext context)
