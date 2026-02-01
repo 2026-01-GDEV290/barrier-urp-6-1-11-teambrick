@@ -9,6 +9,10 @@ public class BrickBarrier : MonoBehaviour
 
     int totalBricksHit = 0;
 
+    // destroyed delegate event
+    public delegate void BrickBarrierDestroyed();
+    public static event BrickBarrierDestroyed OnBrickBarrierDestroyed;
+
     void Awake()
     {
         // add every game object with Brick tag
@@ -96,7 +100,9 @@ public class BrickBarrier : MonoBehaviour
             if (brickRb != null)
             {
                 brickRb.AddExplosionForce(50f, collider.transform.position, 2f);
-            }            
+            }
+
+            OnBrickBarrierDestroyed?.Invoke();
 
         }
         else
