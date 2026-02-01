@@ -95,11 +95,25 @@ public class BrickBarrier : MonoBehaviour
                     rb.useGravity = true;
                 }
             }
-            // apply explosive spherical force at hit point
+            // Apply explosive spherical force at hit point
             Rigidbody brickRb = brick.GetComponent<Rigidbody>();
             if (brickRb != null)
             {
-                brickRb.AddExplosionForce(50f, collider.transform.position, 2f);
+                Vector3 explosionPosition = collider.transform.position;
+                explosionPosition.y = 0.5f;
+                float explosionRadius = 2f;  // Adjust this to affect more/fewer bricks
+                float explosionForce = 250f;
+
+                // Find all rigidbodies in the explosion radius
+                Collider[] colliders = Physics.OverlapSphere(explosionPosition, explosionRadius);
+                foreach (Collider col in colliders)
+                {
+                    Rigidbody rb = col.GetComponent<Rigidbody>();
+                    if (rb != null)
+                    {
+                        rb.AddExplosionForce(explosionForce, explosionPosition, explosionRadius);
+                    }
+                }
             }
 
             OnBrickBarrierDestroyed?.Invoke();

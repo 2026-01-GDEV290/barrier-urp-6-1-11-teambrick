@@ -66,6 +66,7 @@ public class PlayerController : MonoBehaviour
                 attacking = false;
                 retracting = true;
                 weapon.localRotation = Quaternion.Euler(weapon.localRotation.eulerAngles.x, weapon.localRotation.eulerAngles.y, 45f);
+                weaponCollider.isTrigger = true;
             }
             else
                 weapon.Rotate(Vector3.forward * swingSpeed * Time.fixedDeltaTime, Space.Self);
