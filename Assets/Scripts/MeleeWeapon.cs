@@ -10,22 +10,24 @@ public struct HitDecalInfo
 
 public class MeleeWeapon : MonoBehaviour
 {
-    PlayerController playerController;
+    //PlayerController playerController;
     //public GameObject decalPrefab; // Assign a prefab with DecalProjector component
     [SerializeField] Material decalMaterial;
 
     //List<HitDecalInfo> hitDecals = new List<HitDecalInfo>();
 
     Decals decalManager;
+    //public float decalFadeTime = 10f;
 
     public float hitRecoverTime = 0.50f;
     private float lastHitTime = 0f;
 
-    public float decalFadeTime = 10f;
+    public delegate void HitEvent(GameObject hitObject, Vector3 hitPoint);
+    public static event HitEvent OnHit;    
 
     void Awake()
     {
-        playerController = FindFirstObjectByType<PlayerController>();
+        //playerController = FindFirstObjectByType<PlayerController>();
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -60,11 +62,12 @@ public class MeleeWeapon : MonoBehaviour
     void OnCollisionEnter(Collision collision)
     {
         Debug.Log("OnCollision->Melee weapon collided with: " + collision.gameObject.name);
-        playerController.MeleeHit(collision.gameObject);
+        OnHit?.Invoke(collision.gameObject, collision.contacts[0].point);
+        //playerController.MeleeHit(collision.gameObject);
 
-        Debug.Log($"Time.time {Time.time}, lastHitTime: {lastHitTime}, hitRecoverTime: {hitRecoverTime}");
-        if (Time.time > lastHitTime + hitRecoverTime)
-        {
+        //Debug.Log($"Time.time {Time.time}, lastHitTime: {lastHitTime}, hitRecoverTime: {hitRecoverTime}");
+        //if (Time.time > lastHitTime + hitRecoverTime)
+        //{
             // Spawn decal at hit point
             ContactPoint contact = collision.contacts[0];
 
@@ -86,6 +89,6 @@ public class MeleeWeapon : MonoBehaviour
 
             hitDecals.Add(new HitDecalInfo { hitTime = lastHitTime, decal = decal} );
 */          
-        }
+        //}
     }
 }

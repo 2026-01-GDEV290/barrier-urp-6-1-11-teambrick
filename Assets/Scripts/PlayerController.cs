@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour
 
     private Transform weapon;
     private Collider weaponCollider;
+    private BrickBarrier brickBarrier;
 
     bool attacking = false;
     bool retracting = false;
@@ -38,6 +39,17 @@ public class PlayerController : MonoBehaviour
         characterController = GetComponent<CharacterController>();
         rotationY = transform.localEulerAngles.y;
         rotationX = transform.localEulerAngles.x;
+        brickBarrier = FindFirstObjectByType<BrickBarrier>();
+    }
+
+    void OnEnable()
+    {
+        MeleeWeapon.OnHit += MeleeHit;
+    }
+
+    void OnDisable()
+    {
+        MeleeWeapon.OnHit -= MeleeHit;
     }
 
     void Start()
@@ -126,7 +138,7 @@ public class PlayerController : MonoBehaviour
         //Debug.Log("Attack triggered");
     }
 
-    public void MeleeHit(GameObject hitObject)
+    public void MeleeHit(GameObject hitObject, Vector3 hitPoint)
     {
         Debug.Log("PlayerController registered melee hit on: " + hitObject.name);
         
@@ -134,14 +146,33 @@ public class PlayerController : MonoBehaviour
         {
             if (attacking)
             {
-                hitCount++;                
+                hitCount++;
                 if (hitCount > 3)
                     hitCount = 0;
+                
                 cameraShakeDuration = Mathf.Clamp(0.1f + (hitCount * 0.5f), 0.5f, 2f);
                 cameraShakeStrength = Mathf.Clamp(hitCount * 0.10f, 0.10f, 0.3f);
                 StartCoroutine(CameraShake());
+
+                if (hitCount == 3)
+                {
+                    // Trigger brick barrier destruction or other effects
+                    if (brickBarrier != null)
+                    {
+                        brickBarrier.BrickExplode(hitObject, hitPoint);
+                    }
+                }
+                else
+                {
+                    // Trigger brick bash response
+                    if (brickBarrier != null)
+                    {
+                        brickBarrier.BrickBashRespond(hitObject, hitPoint);
+                    }
+                }
                 attacking = false;
                 retracting = true;
+                // Ignore further hits during retraction/after attack finished
                 weaponCollider.isTrigger = true;
             }
         }

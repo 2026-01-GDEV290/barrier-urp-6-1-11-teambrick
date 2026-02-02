@@ -32,12 +32,12 @@ public class BrickBarrier : MonoBehaviour
 
     void OnEnable()
     {
-        BrickHitNotify.OnBrickHit += BrickHitHandler;
+        //BrickHitNotify.OnBrickHit += BrickHitHandler;
     }
 
     void OnDisable()
     {
-        BrickHitNotify.OnBrickHit -= BrickHitHandler;
+        //BrickHitNotify.OnBrickHit -= BrickHitHandler;
     }
 
     void Start()
@@ -136,6 +136,59 @@ public class BrickBarrier : MonoBehaviour
                 brickRb.AddForce(Vector3.forward * Math.Clamp(totalBricksHit * 1.5f, 1.5f, 10f), ForceMode.Impulse);
             }
         }
+    }
+
+    public void BrickBashRespond(GameObject brick, Vector3 hitPoint)
+    {
+        Rigidbody brickRb = brick.GetComponent<Rigidbody>();
+        if (brickRb != null)
+        {
+            brickRb.useGravity = true;
+            brickRb.AddForce(Vector3.forward * 5f, ForceMode.Impulse);
+        }
+    }
+
+    public void BrickExplode(GameObject brick, Vector3 explosionPoint)
+    {
+
+        foreach (GameObject b in basicBricks)
+        {
+            Rigidbody rb = b.GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                rb.useGravity = true;
+            }
+        }
+        foreach (GameObject b in headStoneBricks)
+        {
+            Rigidbody rb = b.GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                rb.useGravity = true;
+            }
+        }
+        // Apply explosive spherical force at hit point
+        Rigidbody brickRb = brick.GetComponent<Rigidbody>();
+        if (brickRb != null)
+        {
+            Vector3 explosionPosition = explosionPoint;
+            explosionPosition.y = 0.5f;
+            float explosionRadius = 2f;  // Adjust this to affect more/fewer bricks
+            float explosionForce = 250f;
+
+            // Find all rigidbodies in the explosion radius
+            Collider[] colliders = Physics.OverlapSphere(explosionPosition, explosionRadius);
+            foreach (Collider col in colliders)
+            {
+                Rigidbody rb = col.GetComponent<Rigidbody>();
+                if (rb != null)
+                {
+                    rb.AddExplosionForce(explosionForce, explosionPosition, explosionRadius);
+                }
+            }
+        }
+
+        OnBrickBarrierDestroyed?.Invoke();
     }
 
 
