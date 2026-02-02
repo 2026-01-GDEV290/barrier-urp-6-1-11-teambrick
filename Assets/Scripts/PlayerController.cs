@@ -146,28 +146,32 @@ public class PlayerController : MonoBehaviour
         {
             if (attacking)
             {
-                hitCount++;
-                if (hitCount > 3)
-                    hitCount = 0;
-                
-                cameraShakeDuration = Mathf.Clamp(0.1f + (hitCount * 0.5f), 0.5f, 2f);
-                cameraShakeStrength = Mathf.Clamp(hitCount * 0.10f, 0.10f, 0.3f);
-                StartCoroutine(CameraShake());
+                if (hitObject.CompareTag("Brick"))
+                {
+                    hitCount++;
+                    if (hitCount > 3)
+                        hitCount = 0;
+                    
+                    cameraShakeDuration = Mathf.Clamp(0.1f + (hitCount * 0.5f), 0.5f, 2f);
+                    cameraShakeStrength = Mathf.Clamp(hitCount * 0.10f, 0.10f, 0.3f);
+                    StartCoroutine(CameraShake());
+                    Debug.Log("Hit brick");
 
-                if (hitCount == 3)
-                {
-                    // Trigger brick barrier destruction or other effects
-                    if (brickBarrier != null)
+                    if (hitCount == 3)
                     {
-                        brickBarrier.BrickExplode(hitObject, hitPoint);
+                        // Trigger brick barrier destruction or other effects
+                        if (brickBarrier != null)
+                        {
+                            brickBarrier.BrickExplode(hitObject, hitPoint);
+                        }
                     }
-                }
-                else
-                {
-                    // Trigger brick bash response
-                    if (brickBarrier != null)
+                    else
                     {
-                        brickBarrier.BrickBashRespond(hitObject, hitPoint);
+                        // Trigger brick bash response
+                        if (brickBarrier != null)
+                        {
+                            brickBarrier.BrickBashRespond(hitObject, hitPoint);
+                        }
                     }
                 }
                 attacking = false;
