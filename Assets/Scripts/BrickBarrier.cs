@@ -173,8 +173,9 @@ public class BrickBarrier : MonoBehaviour
         {
             Vector3 explosionPosition = explosionPoint;
             explosionPosition.y = 0.5f;
+            explosionPosition.z -= 0.5f;    // slightly behind hit point
             float explosionRadius = 2f;  // Adjust this to affect more/fewer bricks
-            float explosionForce = 250f;
+            float explosionForce = 300f;
 
             // Find all rigidbodies in the explosion radius
             Collider[] colliders = Physics.OverlapSphere(explosionPosition, explosionRadius);

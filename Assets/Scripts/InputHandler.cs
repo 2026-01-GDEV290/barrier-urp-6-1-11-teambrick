@@ -50,7 +50,9 @@ public class InputHandler : MonoBehaviour
         // 'r' key pressed
         if (Keyboard.current.rKey.wasPressedThisFrame)
         {
-           SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            // cancel out slowdown effects
+            Time.timeScale = 1f;
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
     }
 

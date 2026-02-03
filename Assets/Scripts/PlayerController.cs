@@ -152,8 +152,8 @@ public class PlayerController : MonoBehaviour
                     if (hitCount > 3)
                         hitCount = 0;
                     
-                    cameraShakeDuration = Mathf.Clamp(0.1f + (hitCount * 0.5f), 0.5f, 2f);
-                    cameraShakeStrength = Mathf.Clamp(hitCount * 0.10f, 0.10f, 0.3f);
+                    cameraShakeDuration = Mathf.Clamp(hitCount * 0.33f, 0.33f, 2f);
+                    cameraShakeStrength = Mathf.Clamp(hitCount * 0.05f, 0.05f, 0.3f);
                     StartCoroutine(CameraShake());
                     Debug.Log("Hit brick");
 
@@ -164,6 +164,9 @@ public class PlayerController : MonoBehaviour
                         {
                             brickBarrier.BrickExplode(hitObject, hitPoint);
                         }
+                        // also slow down time for 2 seconds
+                        Time.timeScale = 0.5f;
+                        StartCoroutine(ResetTimeScale());
                     }
                     else
                     {
@@ -204,5 +207,11 @@ public class PlayerController : MonoBehaviour
         }
 
         playerCamera.transform.localPosition = cameraOriginalPosition;
+    }
+
+    private IEnumerator ResetTimeScale()
+    {
+        yield return new WaitForSecondsRealtime(2f);
+        Time.timeScale = 1f;
     }
 }
