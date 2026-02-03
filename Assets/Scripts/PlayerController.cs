@@ -34,6 +34,13 @@ public class PlayerController : MonoBehaviour
 
     public Vector3 newVelocity;
 
+    [SerializeField] private GameObject dustAirEffectPrefab;
+    [SerializeField] private GameObject explosion01EffectPrefab;
+
+    [SerializeField] AudioClip brickHitSound;
+    [SerializeField] AudioClip brickExplodeSound;
+
+
     void Awake()
     {
         characterController = GetComponent<CharacterController>();
@@ -115,6 +122,8 @@ public class PlayerController : MonoBehaviour
     {
         // x-axis of mouse controls pitch (looking up/down)
         rotationY += lookVector.x * rotateSpeed * Time.deltaTime;
+        // make sure to clamp the x rotation to prevent flipping over
+        rotationX = Mathf.Clamp(rotationX, -90f, 90f);        
         rotationX -= lookVector.y * rotateSpeed * Time.deltaTime;
         //rotationX = Mathf.Clamp(rotationX, -90f, 90f);
         transform.localRotation = Quaternion.Euler(rotationX, rotationY, 0);
@@ -138,6 +147,8 @@ public class PlayerController : MonoBehaviour
         //Debug.Log("Attack triggered");
     }
 
+
+
     public void MeleeHit(GameObject hitObject, Vector3 hitPoint)
     {
         Debug.Log("PlayerController registered melee hit on: " + hitObject.name);
@@ -159,17 +170,39 @@ public class PlayerController : MonoBehaviour
 
                     if (hitCount == 3)
                     {
+                        // add FX_explosion_01 to hitPoint, scale 25%
+                        GameObject explosion = Instantiate(explosion01EffectPrefab, hitPoint, Quaternion.identity);
+                        ApplyParticleScale(explosion, 0.5f);
+                        ApplyParticleTransparency(explosion, 0.75f);
+                        ApplyParticleDuration(explosion, 0.10f);
+                        
+                        // play brick explode sound
+                        if (brickExplodeSound != null)
+                        {
+                            AudioSource.PlayClipAtPoint(brickExplodeSound, hitPoint);
+                        }
+
                         // Trigger brick barrier destruction or other effects
                         if (brickBarrier != null)
                         {
                             brickBarrier.BrickExplode(hitObject, hitPoint);
                         }
                         // also slow down time for 2 seconds
-                        Time.timeScale = 0.5f;
+                        Time.timeScale = 0.25f;
                         StartCoroutine(ResetTimeScale());
                     }
                     else
                     {
+                        // add FX_spash_dust_air to hitPoint scale 25%
+                        GameObject dustAir = Instantiate(dustAirEffectPrefab, hitPoint, Quaternion.identity);
+                        ApplyParticleScale(dustAir, 0.33f);
+                        ApplyParticleTransparency(dustAir, 0.75f);
+
+                        // play brick hit sound
+                        if (brickHitSound != null)
+                        {
+                            AudioSource.PlayClipAtPoint(brickHitSound, hitPoint);
+                        }
                         // Trigger brick bash response
                         if (brickBarrier != null)
                         {
@@ -184,7 +217,7 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
-
+#region Camera Shake
     private IEnumerator CameraShake()
     {
         cameraOriginalPosition = playerCamera.transform.localPosition;
@@ -208,10 +241,86 @@ public class PlayerController : MonoBehaviour
 
         playerCamera.transform.localPosition = cameraOriginalPosition;
     }
+#endregion Camera Shake
 
+#region Time Scale Reset
     private IEnumerator ResetTimeScale()
     {
         yield return new WaitForSecondsRealtime(2f);
         Time.timeScale = 1f;
     }
+#endregion Time Scale Reset
+
+#region Particle FX Helpers
+    private void ApplyParticleScale(GameObject fx, float scale)
+    {
+        if (fx == null) return;
+
+        fx.transform.localScale *= scale;
+
+        var systems = fx.GetComponentsInChildren<ParticleSystem>(true);
+        foreach (var ps in systems)
+        {
+            var main = ps.main;
+            main.scalingMode = ParticleSystemScalingMode.Hierarchy;
+
+            // Start Size
+            main.startSizeMultiplier *= scale;
+
+            // Size over Lifetime
+            var sol = ps.sizeOverLifetime;
+            if (sol.enabled)
+                sol.sizeMultiplier *= scale;
+
+            // Size by Speed
+            var sbs = ps.sizeBySpeed;
+            if (sbs.enabled)
+                sbs.sizeMultiplier *= scale;
+
+            // Shape (emission volume)
+            var shape = ps.shape;
+            shape.scale *= scale;
+        }
+    }
+
+    private void ApplyParticleTransparency(GameObject fx, float alpha)
+    {
+        if (fx == null) return;
+
+        var systems = fx.GetComponentsInChildren<ParticleSystem>(true);
+        foreach (var ps in systems)
+        {
+            var main = ps.main;
+            Color startColor = main.startColor.color;
+            startColor.a *= alpha; // Multiply existing alpha
+            main.startColor = startColor;
+
+            // If Color over Lifetime is enabled
+            var col = ps.colorOverLifetime;
+            if (col.enabled)
+            {
+                // Note: Cannot easily modify curves at runtime
+                // Consider disabling or using Start Color only
+            }
+        }
+    }
+    private void ApplyParticleDuration(GameObject fx, float durationMultiplier)
+    {
+        if (fx == null) return;
+
+        var systems = fx.GetComponentsInChildren<ParticleSystem>(true);
+        foreach (var ps in systems)
+        {
+            var main = ps.main;
+            
+            // Use Unscaled time so Time.timeScale doesn't affect particles
+            main.simulationSpace = ParticleSystemSimulationSpace.World;
+           // main.useUnscaledTime = true;
+            
+            main.duration *= durationMultiplier;
+            main.startLifetimeMultiplier *= durationMultiplier;
+            main.loop = false;
+        }
+    }
+#endregion Particle FX Helpers
 }

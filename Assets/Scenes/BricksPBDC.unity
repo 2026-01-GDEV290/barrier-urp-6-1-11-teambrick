@@ -32252,6 +32252,12 @@ MonoBehaviour:
   cameraShakeDuration: 0.1
   cameraShakeStrength: 0.15
   newVelocity: {x: 0, y: 0, z: 0}
+  dustAirEffectPrefab: {fileID: 9183441545307328538, guid: 24731d4f17b7d214c9ac3c0aefe3f0b1,
+    type: 3}
+  explosion01EffectPrefab: {fileID: 1248798265982925789, guid: aeb71b6fec0b7df449f982f290bb1c6f,
+    type: 3}
+  brickHitSound: {fileID: 8300000, guid: 6d46af5c874713c4ab9f426ed5d6077f, type: 3}
+  brickExplodeSound: {fileID: 8300000, guid: 37f0adab9fb27f64c91e24750862a011, type: 3}
 --- !u!114 &2010331886031804171
 MonoBehaviour:
   m_ObjectHideFlags: 0
