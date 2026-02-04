@@ -37,6 +37,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private GameObject dustAirEffectPrefab;
     [SerializeField] private GameObject explosion01EffectPrefab;
 
+    [SerializeField] AudioClip weaponSwingSound;
     [SerializeField] AudioClip brickHitSound;
     [SerializeField] AudioClip brickExplodeSound;
 
@@ -143,6 +144,11 @@ public class PlayerController : MonoBehaviour
         {
             attacking = true;
             weaponCollider.isTrigger = false;
+            // play weapon swing sound
+            if (weaponSwingSound != null)
+            {
+                AudioSource.PlayClipAtPoint(weaponSwingSound, weapon.position);
+            }
         }
         //Debug.Log("Attack triggered");
     }
