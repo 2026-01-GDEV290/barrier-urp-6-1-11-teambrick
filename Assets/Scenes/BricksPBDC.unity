@@ -23783,7 +23783,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   basicBricks: []
   headStoneBricks: []
-  brickHitOtherSound: {fileID: 8300000, guid: 20cb81e365fad70448f351c2841c2aa3, type: 3}
+  brickHitOtherSound: {fileID: 8300000, guid: 14911a9898042c24c8d0ba2bef40bf66, type: 3}
 --- !u!4 &1568513702
 Transform:
   m_ObjectHideFlags: 0
@@ -34619,8 +34619,8 @@ MonoBehaviour:
     type: 3}
   explosion01EffectPrefab: {fileID: 1248798265982925789, guid: aeb71b6fec0b7df449f982f290bb1c6f,
     type: 3}
-  weaponSwingSound: {fileID: 8300000, guid: c9b81f51cc237674bb4cb22d0b320f8d, type: 3}
-  brickHitSound: {fileID: 8300000, guid: 446b0204d1aee2c47acd1fecfef36b21, type: 3}
+  weaponSwingSound: {fileID: 8300000, guid: 78d1bb2c1ccca93439484c188dd0e7be, type: 3}
+  brickHitSound: {fileID: 8300000, guid: edac4060c32a5f045b82d63f6868eccd, type: 3}
   brickExplodeSound: {fileID: 8300000, guid: 37f0adab9fb27f64c91e24750862a011, type: 3}
   brickSlideSound: {fileID: 8300000, guid: 311506144b409a34f8e86a58ef92e5a6, type: 3}
 --- !u!114 &2010331886031804171

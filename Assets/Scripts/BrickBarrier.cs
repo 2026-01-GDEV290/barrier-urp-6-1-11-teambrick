@@ -60,8 +60,10 @@ public class BrickBarrier : MonoBehaviour
         // play other brick hit sound
         if (hitObject.name.Contains("Plane") && brickHitOtherSound != null && Time.time >= timeBeforeNextHit)
         {
-            AudioSource.PlayClipAtPoint(brickHitOtherSound, hitPoint);
-            timeBeforeNextHit = Time.time + brickHitOtherSound.length / 3f;
+            PlaySoundWithRandomPitch(brickHitOtherSound, hitPoint);
+
+            //AudioSource.PlayClipAtPoint(brickHitOtherSound, hitPoint);
+            timeBeforeNextHit = Time.time + brickHitOtherSound.length / 2f;
         }
     }
 
@@ -206,5 +208,21 @@ public class BrickBarrier : MonoBehaviour
         OnBrickBarrierDestroyed?.Invoke();
     }
 
+    void PlaySoundWithRandomPitch(AudioClip clip, Vector3 position)
+    {
+        // Create a temporary GameObject with AudioSource
+        GameObject tempAudio = new GameObject("TempAudio");
+        tempAudio.transform.position = position;
+        AudioSource audioSource = tempAudio.AddComponent<AudioSource>();
+        
+        // Configure AudioSource
+        audioSource.clip = clip;
+        audioSource.spatialBlend = 1f; // 3D sound
+        audioSource.pitch = UnityEngine.Random.Range(0.8f, 1.2f);
+        audioSource.Play();
+        
+        // Destroy after clip finishes
+        Destroy(tempAudio, clip.length);
+    }
 
 }
