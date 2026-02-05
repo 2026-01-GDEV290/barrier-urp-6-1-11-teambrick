@@ -9,6 +9,7 @@ public class BrickBarrier : MonoBehaviour
     [SerializeField] AudioClip brickHitOtherSound;
 
     int totalBricksHit = 0;
+    float timeBeforeNextHit = 0f;
 
     // destroyed delegate event
     public delegate void BrickBarrierDestroyed();
@@ -57,9 +58,10 @@ public class BrickBarrier : MonoBehaviour
         Debug.Log("Brick " + brick.name + " registered brick hit notify on: " + hitObject.name);
 
         // play other brick hit sound
-        if (brickHitOtherSound != null)
+        if (hitObject.name.Contains("Plane") && brickHitOtherSound != null && Time.time >= timeBeforeNextHit)
         {
             AudioSource.PlayClipAtPoint(brickHitOtherSound, hitPoint);
+            timeBeforeNextHit = Time.time + brickHitOtherSound.length / 3f;
         }
     }
 

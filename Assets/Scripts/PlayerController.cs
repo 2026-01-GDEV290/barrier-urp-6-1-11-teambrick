@@ -40,6 +40,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] AudioClip weaponSwingSound;
     [SerializeField] AudioClip brickHitSound;
     [SerializeField] AudioClip brickExplodeSound;
+    [SerializeField] AudioClip brickSlideSound;
 
 
     void Awake()
@@ -208,6 +209,10 @@ public class PlayerController : MonoBehaviour
                         if (brickHitSound != null)
                         {
                             AudioSource.PlayClipAtPoint(brickHitSound, hitPoint);
+                        }
+                        if (brickSlideSound != null)
+                        {
+                            AudioSource.PlayClipAtPoint(brickSlideSound, hitPoint);
                         }
                         // Trigger brick bash response
                         if (brickBarrier != null)
