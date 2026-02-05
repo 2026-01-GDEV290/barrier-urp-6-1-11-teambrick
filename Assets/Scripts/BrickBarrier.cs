@@ -54,7 +54,7 @@ public class BrickBarrier : MonoBehaviour
 
     public void BrickHitHandler(GameObject brick, GameObject hitObject, Vector3 hitPoint)
     {
-        Debug.Log("PlayerController registered brick hit notify on: " + hitObject.name);
+        Debug.Log("Brick " + brick.name + " registered brick hit notify on: " + hitObject.name);
 
         // play other brick hit sound
         if (brickHitOtherSound != null)
