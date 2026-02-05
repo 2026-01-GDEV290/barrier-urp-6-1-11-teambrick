@@ -6,6 +6,7 @@ public class BrickBarrier : MonoBehaviour
 {
     [SerializeField] List<GameObject> basicBricks;
     [SerializeField] List<GameObject> headStoneBricks;
+    [SerializeField] AudioClip brickHitOtherSound;
 
     int totalBricksHit = 0;
 
@@ -32,12 +33,12 @@ public class BrickBarrier : MonoBehaviour
 
     void OnEnable()
     {
-        //BrickHitNotify.OnBrickHit += BrickHitHandler;
+        BrickHitNotify.OnBrickHit += BrickHitHandler;
     }
 
     void OnDisable()
     {
-        //BrickHitNotify.OnBrickHit -= BrickHitHandler;
+        BrickHitNotify.OnBrickHit -= BrickHitHandler;
     }
 
     void Start()
@@ -51,7 +52,18 @@ public class BrickBarrier : MonoBehaviour
         
     }
 
-    void BrickHitHandler(GameObject brick, GameObject collider)
+    public void BrickHitHandler(GameObject brick, GameObject hitObject, Vector3 hitPoint)
+    {
+        Debug.Log("PlayerController registered brick hit notify on: " + hitObject.name);
+
+        // play other brick hit sound
+        if (brickHitOtherSound != null)
+        {
+            AudioSource.PlayClipAtPoint(brickHitOtherSound, hitPoint);
+        }
+    }
+
+    void BrickHitHandleOld(GameObject brick, GameObject collider)
     {
         // ignore hits from other bricks
         //if (basicBricks.Contains(collider) || headStoneBricks.Contains(collider))
